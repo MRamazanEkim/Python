@@ -117,7 +117,7 @@ class ScoreboardApp:
         self.fullscreen = not self.fullscreen
         self.root.attributes('-fullscreen', self.fullscreen)
         if not self.fullscreen:
-            self.root.geometry("1280x720")
+            self.root.geometry("800x600")
 
     # Function to change Scoreboard Frame color
     def change_frame_color(self):
@@ -140,6 +140,8 @@ class ScoreboardApp:
 
 
 root = tk.Tk()
-root.geometry("1280x720")
+root.geometry("800x600")
 app = ScoreboardApp(root)
 root.mainloop()
+
+
