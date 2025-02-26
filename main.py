@@ -9,7 +9,7 @@ class ScoreboardApp:
 
     def __init__(self, root):
         self.root = root
-        self.fullscreen = True
+        self.fullscreen = False
         self.root.attributes('-fullscreen', self.fullscreen)
         self.root.bind("<Escape>", self.toggle_fullscreen)
 
@@ -18,8 +18,9 @@ class ScoreboardApp:
         self.bg_label.place(relwidth=1, relheight=1)
 
         # SCOREBOARD Title
-        self.scoreboard_label = tk.Label(root, text="SCOREBOARD", font=("Arial", 50, "bold"), bg="black", fg="white")
-        self.scoreboard_label.place(relx=0.5, rely=0.05, anchor="center")
+        self.title_var = tk.StringVar(value="SCOREBOARD")
+        self.title_entry = tk.Entry(root, textvariable=self.title_var, font=("Arial", 45,"bold"), width=20, justify="center", bg="black", fg="white")
+        self.title_entry.place(relx=0.5, rely=0.05, anchor="center")
 
         # Team Data
         self.team1_players = []
@@ -117,7 +118,7 @@ class ScoreboardApp:
         self.fullscreen = not self.fullscreen
         self.root.attributes('-fullscreen', self.fullscreen)
         if not self.fullscreen:
-            self.root.geometry("800x600")
+            self.root.geometry("1280x720")
 
     # Function to change Scoreboard Frame color
     def change_frame_color(self):
@@ -140,8 +141,6 @@ class ScoreboardApp:
 
 
 root = tk.Tk()
-root.geometry("800x600")
+root.geometry("1280x720")
 app = ScoreboardApp(root)
 root.mainloop()
-
-
