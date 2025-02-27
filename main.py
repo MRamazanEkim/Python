@@ -1,7 +1,6 @@
 import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk
-from tkinter import colorchooser
+from tkinter import filedialog, colorchooser, Toplevel
+from PIL import Image, ImageTk, ImageGrab
 
 
 class ScoreboardApp:
@@ -9,6 +8,7 @@ class ScoreboardApp:
 
     def __init__(self, root):
         self.root = root
+        self.root.title("M3 Scoreboard")
         self.fullscreen = False
         self.root.attributes('-fullscreen', self.fullscreen)
         self.root.bind("<Escape>", self.toggle_fullscreen)
@@ -53,9 +53,13 @@ class ScoreboardApp:
 
         self.player_name_color_button = tk.Button(root, text="🎨", command=self.change_player_names_color, bg="orange", fg="black", relief="raised", bd=5, font=("Arial", 12))
         self.player_name_color_button.place(relx=0.90, rely=0.02, anchor="ne")
-
-    
-
+        
+        # Update Screenshot Button (Smaller and changed to "#")
+        self.update_button = tk.Button(self.root, text="#", font=("Arial", 14), command=self.capture_screenshot, width=3, height=1, bg="gray", fg="white", relief="raised", bd=5)
+        self.update_button.place(relx=0.02, rely=0.98, anchor="sw")
+        
+        # Create second window at startup
+        self.create_second_window()
 
     def add_team1_player(self):
         if len(self.team1_players) < self.MAX_PLAYERS:
@@ -106,6 +110,42 @@ class ScoreboardApp:
             player["widgets"][1].grid(row=rank, column=1, pady=10, padx=10)  # Name
             player["widgets"][2].grid(row=rank, column=2, pady=10, padx=10)  # Score
 
+    def create_second_window(self):
+        self.second_window = Toplevel(self.root)
+        self.second_window.title("Preview")
+        self.second_window.geometry("1280x720")
+        self.second_window.attributes('-fullscreen', True)
+        self.second_window.bind("<Escape>", lambda event: self.toggle_second_window_fullscreen(self.second_window))
+        self.screenshot_label = tk.Label(self.second_window)
+        self.screenshot_label.pack()
+    
+    def capture_screenshot(self):
+        self.root.update()
+        x = self.root.winfo_rootx()
+        y = self.root.winfo_rooty()
+        w = x + self.root.winfo_width()
+        h = y + self.root.winfo_height()
+        screenshot = ImageGrab.grab(bbox=(x, y, w, h))
+
+        self.second_window.geometry(f'{self.root.winfo_width()}x{self.root.winfo_height()}')
+        screenshot = screenshot.resize((self.root.winfo_width(), self.root.winfo_height()), Image.LANCZOS)
+        screenshot_img = ImageTk.PhotoImage(screenshot)
+        
+        self.screenshot_label.config(image=screenshot_img)
+        self.screenshot_label.image = screenshot_img  # Keep a reference to prevent garbage collection
+
+    def toggle_fullscreen(self, event=None):
+        self.fullscreen = not self.fullscreen
+        self.root.attributes('-fullscreen', self.fullscreen)
+        if not self.fullscreen:
+            self.root.geometry("1280x720")
+
+    def toggle_second_window_fullscreen(self, window):
+        is_fullscreen = window.attributes('-fullscreen')
+        window.attributes('-fullscreen', not is_fullscreen)
+        if not is_fullscreen:
+            window.geometry("1280x720")
+    
     def change_background(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
@@ -114,18 +154,12 @@ class ScoreboardApp:
             self.bg_image = ImageTk.PhotoImage(image)
             self.bg_label.config(image=self.bg_image)
 
-    def toggle_fullscreen(self, event=None):
-        self.fullscreen = not self.fullscreen
-        self.root.attributes('-fullscreen', self.fullscreen)
-        if not self.fullscreen:
-            self.root.geometry("1280x720")
-
     # Function to change Scoreboard Frame color
     def change_frame_color(self):
         color = colorchooser.askcolor()[1]
         if color:
             self.scoreboard_frame.config(bg=color)
-
+    
     # Function to change Team Name color
     def change_team_name_color(self):
         color = colorchooser.askcolor()[1]
