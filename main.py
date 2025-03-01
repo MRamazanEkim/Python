@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog, colorchooser, Toplevel
 from PIL import Image, ImageTk, ImageGrab
+import os
+import sys
 
 
 class ScoreboardApp:
@@ -9,6 +11,10 @@ class ScoreboardApp:
     def __init__(self, root):
         self.root = root
         self.root.title("M3 Scoreboard")
+        
+        # Set custom window icon
+        self.root.iconbitmap("C:\Dev\Python\M3_Works.ico")
+        
         self.fullscreen = False
         self.root.attributes('-fullscreen', self.fullscreen)
         self.root.bind("<Escape>", self.toggle_fullscreen)
@@ -116,16 +122,24 @@ class ScoreboardApp:
         self.second_window.geometry("1280x720")
         self.second_window.attributes('-fullscreen', True)
         self.second_window.bind("<Escape>", lambda event: self.toggle_second_window_fullscreen(self.second_window))
+        
+        # Set icon for the second window (ensure absolute path)
+        icon_path = "C:\Dev\Python\M3_Works.ico"
+        if hasattr(sys, "_MEIPASS"):  # Fix for PyInstaller exe builds
+            icon_path = os.path.join(sys._MEIPASS, "C:\Dev\Python\M3_Works.ico")
+
+        self.second_window.iconbitmap(icon_path)
+        
         self.screenshot_label = tk.Label(self.second_window)
         self.screenshot_label.pack()
     
     def capture_screenshot(self):
+        self.update_button.focus_set() # Remove focus from text fields
+        
         self.root.update()
-        x = self.root.winfo_rootx()
-        y = self.root.winfo_rooty()
-        w = x + self.root.winfo_width()
-        h = y + self.root.winfo_height()
-        screenshot = ImageGrab.grab(bbox=(x, y, w, h))
+        x1,y1 = 200,0
+        x2,y2 = 1680, 1080
+        screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
 
         self.second_window.geometry(f'{self.root.winfo_width()}x{self.root.winfo_height()}')
         screenshot = screenshot.resize((self.root.winfo_width(), self.root.winfo_height()), Image.LANCZOS)
