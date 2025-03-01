@@ -13,7 +13,14 @@ class ScoreboardApp:
         self.root.title("M3 Scoreboard")
         
         # Set custom window icon
-        self.root.iconbitmap("C:\Dev\Python\M3_Works.ico")
+        if getattr(sys, 'frozen', False):
+        # Running in a PyInstaller-built EXE
+            icon_path = os.path.join(sys._MEIPASS, "M3_Works.ico")
+        else:
+        # Running as a normal Python script
+            icon_path = os.path.join(os.path.dirname(__file__), "M3_Works.ico")
+        
+        self.root.iconbitmap(icon_path)
         
         self.fullscreen = False
         self.root.attributes('-fullscreen', self.fullscreen)
